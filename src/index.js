@@ -67,12 +67,51 @@ const app = express();
 const port = 80;
 const path = require("path");
 const staticPath = path.join(__dirname,"../public");
+// to use partials we have to require template engine
+const hbs = require("hbs");
 
 // express middleware
-app.use(express.static(staticPath));
+// app.use(express.static(staticPath));
 
-app.get("/",(req,res)=>{
-    res.send('hello')
+// Template Engine
+// to set view engine means telling k what view engine we are using like hbs,pug or EJS.
+app.set("view engine","hbs");
+// when view directory name changes, how to give new name
+const templatePath =path.join(__dirname,"../templates/views")
+app.set("views",templatePath);
+
+// template engine route
+// app.get("",(req,res)=>{
+//     res.render("index");
+// })
+
+// adding dynamic data
+app.get("",(req,res)=>{
+    res.render("index",{
+        yourName: "Rizwan"
+    });
+})
+const partialPath = path.join(__dirname,"../templates/partials")
+// console.log("dir name",path.join(__dirname,"../templates/partials"));
+// now registring partials
+hbs.registerPartials(partialPath)
+
+
+// app.get("/",(req,res)=>{
+//     res.send('hello')
+// })
+app.get("/about",(req,res)=>{
+    res.render("index");
+})
+app.get("/about*",(req,res)=>{
+    res.render("404",{
+        errorcomment: "OOPs file not found!"
+    })
+})
+app.get("*",(req,res)=>{
+    res.render("404",{
+        errorcomment: "OOPs file not found!"
+    })
 })
 
 app.listen(port,()=>{
